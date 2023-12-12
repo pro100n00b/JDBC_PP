@@ -1,22 +1,20 @@
 package jm.task.core.jdbc.dao;
 
 import jm.task.core.jdbc.model.User;
+import jm.task.core.jdbc.util.Util;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
-    private final String nameForDb = "root";
-    private final String pass = "1234";
-    private final String url = "jdbc:mysql://localhost:3306/mysql";
 
     public UserDaoJDBCImpl() {
     }
 
     public void createUsersTable() {
-        try (Connection con = DriverManager.getConnection(url, nameForDb, pass);
-             Statement db = con.createStatement()) {
+        Util con = new Util();
+        try (Statement db = con.getConnectionJDBC().createStatement()) {
             db.execute("CREATE TABLE IF NOT EXISTS users ( id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(30), lastname VARCHAR(30), age INTEGER(3) )");
 
         } catch (SQLException e) {
@@ -26,8 +24,8 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void dropUsersTable() {
-        try (Connection con = DriverManager.getConnection(url, nameForDb, pass);
-             Statement db = con.createStatement()) {
+        Util con = new Util();
+        try (Statement db = con.getConnectionJDBC().createStatement()) {
             db.execute("DROP TABLE users");
 
         } catch (SQLException e) {
@@ -37,8 +35,10 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        try (Connection con = DriverManager.getConnection(url, nameForDb, pass)) {
-            PreparedStatement db = con.prepareStatement("INSERT INTO users (name, lastname, age) VALUES (?, ?, ?)");
+        Util con = new Util();
+        try  {
+            Connection connection = con.getConnectionJDBC();
+            PreparedStatement db = connection.prepareStatement("INSERT INTO users (name, lastname, age) VALUES (?, ?, ?)");
             db.setString(1, name);
             db.setString(2, lastName);
             db.setInt(3, age);
@@ -52,8 +52,8 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void removeUserById(long id) {
-        try (Connection con = DriverManager.getConnection(url, nameForDb, pass);
-             Statement db = con.createStatement()) {
+        Util con = new Util();
+        try (Statement db = con.getConnectionJDBC().createStatement()) {
             db.execute("DELETE FROM users WHERE id = " + id);
 
         } catch (SQLException e) {
@@ -63,10 +63,9 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public List<User> getAllUsers() {
+        Util con = new Util();
         ArrayList<User> result = new ArrayList<>();
-        try (Connection con = DriverManager.getConnection(url, nameForDb, pass);
-
-             Statement db = con.createStatement()) {
+        try (Statement db = con.getConnectionJDBC().createStatement()) {
             ResultSet data = db.executeQuery("SELECT * FROM users");
 
             while (data.next()) {
@@ -92,8 +91,8 @@ public class UserDaoJDBCImpl implements UserDao {
 
 
     public void cleanUsersTable() {
-        try (Connection con = DriverManager.getConnection(url, nameForDb, pass);
-             Statement db = con.createStatement()) {
+        Util con = new Util();
+        try (Statement db = con.getConnectionJDBC().createStatement()) {
             db.execute("TRUNCATE TABLE users");
 
         } catch (SQLException e) {
