@@ -69,7 +69,7 @@ public class UserDaoJDBCImpl implements UserDao {
             ResultSet data = db.executeQuery("SELECT * FROM users");
 
             while (data.next()) {
-                Long id = data.getLong(1);
+                long id = data.getLong(1);
                 String n = data.getNString(2);
                 String lN = data.getNString(3);
                 Byte age = data.getByte(4);
@@ -77,7 +77,7 @@ public class UserDaoJDBCImpl implements UserDao {
                 you.setAge(age);
                 you.setLastName(lN);
                 you.setName(n);
-                you.setId(Long.valueOf(id));
+                you.setId(id);
                 result.add(you);
 
             }
